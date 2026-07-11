@@ -2,7 +2,7 @@
 
 ## For the orchestrator: how to fill this template
 
-Substitute five slots before sending this file as a subagent prompt:
+Substitute six slots before sending this file as a subagent prompt:
 `<<BRIEF_PATH>>` — the same page brief given to the implementer.
 `<<REPORT_PATH>>` — the implementer's report file (sections written, Key
 Decisions with Refs, symbols verified, check output, self-review notes).
@@ -16,7 +16,9 @@ verbatim; for the reviewer this is the attention lens, not just a rule
 list — every finding should trace back to one of these rules or to a
 factual mismatch with source. `<<MIN_COVERAGE>>` — restate the brief's
 minimum flows and minimum decisions for this page, so the reviewer can
-check coverage without re-deriving it from `<<BRIEF_PATH>>`. Dispatch on
+check coverage without re-deriving it from `<<BRIEF_PATH>>`.
+`<<CHECK_CMD>>` — the rendered check-script invocation, the same value
+you pass the implementer. Dispatch on
 a mid-tier model (in Claude Code: sonnet), immediately after each
 implementer completes.
 
@@ -49,17 +51,13 @@ Apply this review method:
    rationale. Misattribution is Critical even when the underlying fact is
    true. If git history proves the brief itself wrong, say so explicitly —
    a proven deviation is the implementer being right.
-3. **Mechanical:** run the check script; verify the eight sections are in
+3. **Mechanical:** run `<<CHECK_CMD>>`; verify the eight sections are in
    order (the script checks presence only); scan for line numbers, stray
    design-doc paths, non-canonical links.
 4. **Spec compliance vs the brief:** minimum flows and decisions covered?
    Anything out of scope?
 5. **Quality:** prose clarity for the stated audience; diagram types exist
    in source; no aspirational content outside Implementation Notes.
-
-For step 3's check script: `<<REPORT_PATH>>` records the exact command
-the implementer ran in its Step D and the output it got — rerun that
-same command yourself rather than guessing its name or location.
 
 Return: a spec-compliance verdict (✅/❌, with specifics), a quality
 verdict (Approved / Needs fixes), findings classified Critical/
