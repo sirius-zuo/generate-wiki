@@ -61,6 +61,6 @@ Follow this six-step procedure:
 Report contract: write a full report to `<<REPORT_PATH>>` covering the
 sections you wrote, the page's line count, every Key Decision with its
 Ref and rationale source, the symbols you verified, the Step D check
-output, and your Step E self-review notes. Return to the orchestrator
+output, your Step E self-review notes, and the commit SHA. Return to the orchestrator
 ONLY: status (`DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` /
 `BLOCKED`), the commit SHA, a one-line summary, and any concerns.
