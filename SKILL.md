@@ -61,7 +61,7 @@ generate mode.
 Materialize the three assets into the target repo:
 
 - `assets/TEMPLATE.md` → `<dir>/TEMPLATE.md`, copied as-is.
-- `assets/hub-template.md` → `<dir>/README.md`, all six `{{...}}` tokens
+- `assets/hub-template.md` → `<dir>/README.md`, all five `{{...}}` tokens
   filled: `{{PROJECT_NAME}}`; `{{SYSTEM_DESCRIPTION}}` (two paragraphs
   drafted from repo exploration); `{{WIKI_DIR}}` = `<dir>`; `{{CRATE_DAG}}`
   — mermaid `graph TD` edges derived from real manifest dependencies, never
@@ -114,9 +114,10 @@ e. Dispatch a reviewer subagent on **a mid-tier model (in Claude Code:
    inline; `<<CHECK_CMD>>` = same value as (c).
 f. Critical/Important findings → dispatch ONE fix subagent on **a mid-tier
    model (in Claude Code: sonnet)** with the complete findings list and the
-   binding rules, appending to the same `REPORT_PATH`; then re-dispatch the
-   reviewer with the same slots. Minors → record in the ledger for
-   final-review triage; do not fix now.
+   binding rules, appending to the same `REPORT_PATH`; regenerate the diff
+   package with `git diff $BASE..HEAD > .generate-wiki/review-<name>.diff`;
+   then re-dispatch the reviewer with the same slots. Minors → record in the
+   ledger for final-review triage; do not fix now.
 g. Append one line to `.generate-wiki/progress.md`:
    `Page <name>: complete (commits X..Y, review <outcome>); minors: ...;
    findings: ...`.
