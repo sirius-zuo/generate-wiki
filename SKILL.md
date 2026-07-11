@@ -36,7 +36,9 @@ sets whether the PR-body sourcing tier (binding rules §2) exists this run.
 Probe for design-doc directories at the repo root — `docs/`, `doc/`,
 `design/`, `adr/`, `rfcs/` — existence only; which (if any) to mine is
 confirmed in G2. Create the working branch (default `docs/internal-wiki`,
-name confirmed in G2). Ensure `.generate-wiki/` is listed in the target
+name confirmed in G2) and record `git rev-parse HEAD >
+.generate-wiki/branch-base` (G6 reads this for the whole-branch diff).
+Ensure `.generate-wiki/` is listed in the target
 repo's `.gitignore`, appending it if not — this run-state directory
 (ledger, briefs, reports, diff packages) must never be committed.
 
@@ -49,7 +51,9 @@ per subsystem with a one-line "covers" note. Then run exactly ONE
 AskUserQuestion round, up to 3 questions:
 
 1. Approve or adjust the proposed page set (merge, split, add, drop).
-2. Confirm the output directory (`<dir>`) and branch name.
+2. Confirm the output directory (`<dir>`) and branch name — if the user
+   picks a name other than G1's default, rename the branch with `git
+   branch -m <new-name>`.
 3. Confirm sourcing inputs: which design-doc directories to mine (and
    whether they're tracked), and whether PR history is meaningful here.
 
@@ -135,7 +139,7 @@ Dispatch ONE subagent on **a mid-tier model (in Claude Code: sonnet)** from
 reviewed, filling all four slots: `<<WIKI_DIR>>` = `<dir>`; `<<CHECK_CMD>>`
 = `$CHECK` (no page arguments, checks every page); `<<BINDING_RULES>>` =
 `references/binding-rules.md` verbatim; `<<REPORT_PATH>>` =
-`.generate-wiki/cross-link-report.md`. Then the controller verifies
+`.generate-wiki/cross-link-report.md`. Then the orchestrator verifies
 directly — no reviewer dispatch for this pass: `$CHECK` green over all
 pages; a fresh symmetric link-graph scan (re-run, not reused from the
 subagent's report); zero stray design-doc paths; spot-check any new
@@ -145,7 +149,8 @@ sentence the pass introduced against source.
 
 Build the whole-branch diff package:
 `git diff <branch-base>..HEAD > .generate-wiki/final-diff.diff`
-(`<branch-base>` is the commit G1's branch started from). Write
+(`<branch-base>` = the contents of `.generate-wiki/branch-base`, recorded
+in G1). Write
 `.generate-wiki/triage.md`: every deferred Minor plus every real project
 finding recorded in the ledger. Dispatch ONE subagent on **the most
 capable available model** from `references/final-reviewer.md`, filling all
@@ -155,8 +160,9 @@ five slots: `<<WIKI_DIR>>` = `<dir>`; `<<CHECK_CMD>>` = `$CHECK`;
 `.generate-wiki/triage.md`. This is a read-only review — it must not touch
 the working tree. For its findings, dispatch ONE fix subagent on **a
 mid-tier model (in Claude Code: sonnet)** covering the complete list (the
-controller may apply single-sentence fixes directly instead). Re-run all
-gates after fixes land.
+orchestrator may apply single-sentence fixes directly instead). Re-run all
+gates — `$CHECK` green over all pages, a symmetric link-graph scan, and
+zero stray design-doc paths — after fixes land.
 
 ## Generate G7 — Handoff
 
@@ -169,9 +175,13 @@ either without the user's explicit confirmation.
 
 ## Refresh R1 — Drift detection
 
-For each page in `<dir>` (or only the `--pages` subset, if given): parse
-its Source Anchors section into a bullet path list.
-`LAST=$(git log -1 --format=%H -- <dir>/<page>)`.
+Preflight: require a clean working tree — if dirty, use AskUserQuestion to
+confirm before any R3 edits; refresh commits land on the current branch,
+not a new one.
+
+For each page in `<dir>`, except `README.md` and `TEMPLATE.md` (or only
+the `--pages` subset, if given): parse its Source Anchors section into a
+bullet path list. `LAST=$(git log -1 --format=%H -- <dir>/<page>)`.
 `git log --oneline $LAST.. -- <anchor paths>` non-empty → **drifted**. An
 anchor path that no longer exists on disk → **hard drift**, flagged
 separately. An anchor bullet that cannot be parsed as a path →
@@ -186,7 +196,9 @@ working tree is untouched, nothing is committed.
 
 ## Refresh R3 — Update loop
 
-For each drifted page (non-drifted pages are skipped entirely), run the
+`$CHECK` here is the materialized check script — `scripts/check-wiki.sh`
+or `<dir>/check-wiki.sh`, whichever exists. For each drifted page
+(non-drifted pages are skipped entirely), run the
 same G4 machinery (steps a–g, same slot-filling, same reviewer gate) with
 two changes: the brief is a **refresh brief** — the drift evidence from R1
 (the commits/PRs that touched the page's anchors, plus `gh pr view` bodies
@@ -204,7 +216,7 @@ changed. One commit per refreshed page.
 Page implementers, page reviewers, fix subagents, and the cross-linker
 dispatch on **a mid-tier model (in Claude Code: sonnet)**. The final
 whole-wiki review (G6) dispatches on **the most capable available model**.
-The controller never inherits its own session's model into a dispatch
+The orchestrator never inherits its own session's model into a dispatch
 implicitly — every Agent call above names its model explicitly.
 
 ## Error handling
@@ -218,7 +230,7 @@ implicitly — every Agent call above names its model explicitly.
   proceeds without PR bodies.
 - **Check script fails inside a page task:** the implementer fixes it at
   its own Step D (Check) before committing; a failure that reaches the
-  controller (G4 step f already ran once) is a fix-cycle trigger, not a
+  orchestrator (G4 step f already ran once) is a fix-cycle trigger, not a
   crash.
 - **Dirty tree at preflight:** ask, don't assume (G1).
 - **Malformed Source Anchors during refresh:** flag as un-refreshable

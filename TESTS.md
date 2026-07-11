@@ -63,10 +63,12 @@ Anchors.
 
 **Expected output:** The run's drift table names exactly the one page whose
 anchors the seeded commit touched. That page receives exactly one new
-commit: its Source Anchors are updated to the new name/path, and a new Key
-Decision entry is added above the existing ones — the prior entries are
-still present, byte-for-byte, below it (decision history appended, never
-rewritten). No other page file changes.
+commit reflecting the change — either a new Key Decision entry, added
+above the existing ones (the prior entries are still present, byte-for-byte,
+below it; decision history appended, never rewritten), or amended prose in
+an affected section, whichever the change warrants. Its Source Anchors are
+updated only if the seeded commit renamed or moved an anchored path. No
+other page file changes.
 
 **Fail signals:**
 - A page other than the seeded one is modified or recommitted.

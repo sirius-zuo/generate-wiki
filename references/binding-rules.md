@@ -20,7 +20,8 @@ to a specific PR, commit, or doc for, stop and use the fallback instead.
 Gather rationale in this order, degrading gracefully when a tier is unavailable:
 
 1. Design docs the user identified during intake (the project-context interview
-   the controller runs before generation starts) — mine these for rationale.
+   run by the orchestrator — the agent that dispatched this task — before
+   generation starts) — mine these for rationale.
    Link to them only if they are tracked in the repo; otherwise refer to them in
    prose as "the X design doc (untracked)" without a link.
 2. PR bodies, via `gh pr view N --json title,body`, when `gh` is authenticated.
@@ -41,7 +42,8 @@ repo, or an untracked file as a Ref.
 - Diagrams are Mermaid only — no ASCII art, no embedded images.
 - Never cite line numbers (e.g. `foo.rs:123`); reference function, type, and
   file names instead. Line numbers drift the moment code changes; names are
-  what the check script and future readers can verify.
+  what the check script (the repo's materialized `check-wiki.sh`) and
+  future readers can verify.
 - Links target only canonical wiki page filenames (the pages listed in the
   hub/README), never raw paths into `docs/` or other untracked locations.
 - Before writing a sentence that names a symbol (function, type, module, file),
@@ -59,7 +61,7 @@ repo, or an untracked file as a Ref.
 Unwired code, dead code, stale comments, and spec drift discovered while
 verifying a page against source must be documented on the page itself, under
 Implementation Notes, and also called out in the subagent's return summary so
-the controller can include them in the run report. Never smooth these over or
+the orchestrator can include them in the run report. Never smooth these over or
 omit them to make the page read cleaner — a page that hides a known gap is
 worse than one that names it.
 

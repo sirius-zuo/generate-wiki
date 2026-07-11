@@ -43,8 +43,8 @@ Invariants, gotchas, known debt / open follow-ups (labeled as such).
 
 ## Source Anchors
 
-- `avs-example/src/lib.rs`
-- `avs-example/` (module)
+- `example/src/lib.rs`
+- `example/` (module)
 
 <!-- The drift contract: a PR changing files under these anchors updates this page
      or says why not in the PR body. -->
