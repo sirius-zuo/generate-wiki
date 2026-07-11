@@ -48,8 +48,8 @@ for p in "${pages[@]}"; do
       || { echo "FAIL: $f mermaid block starts with unknown type: '$first'"; fail=1; }
   done < <(awk '/^```mermaid/{getline; print}' "$f" || true)
 
-  # No line-number references (e.g. foo.rs:123, foo.py:45)
-  if grep -nE '\.[a-zA-Z]+:[0-9]+' "$f"; then echo "FAIL: $f contains line-number references"; fail=1; fi
+  # No line-number references (e.g. foo.rs:123, foo.py:45); scheme URLs (https://host:port) are exempt
+  if grep -nE '\.[a-zA-Z]+:[0-9]+' "$f" | grep -vE '://'; then echo "FAIL: $f contains line-number references"; fail=1; fi
 done
 
 [ $fail -eq 0 ] && echo "check-wiki: OK (${#pages[@]} page(s))"

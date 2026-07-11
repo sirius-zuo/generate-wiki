@@ -65,9 +65,9 @@ generate mode.
 Materialize the three assets into the target repo:
 
 - `assets/TEMPLATE.md` → `<dir>/TEMPLATE.md`, copied as-is.
-- `assets/hub-template.md` → `<dir>/README.md`, all five `{{...}}` tokens
+- `assets/hub-template.md` → `<dir>/README.md`, all four `{{...}}` tokens
   filled: `{{PROJECT_NAME}}`; `{{SYSTEM_DESCRIPTION}}` (two paragraphs
-  drafted from repo exploration); `{{WIKI_DIR}}` = `<dir>`; `{{CRATE_DAG}}`
+  drafted from repo exploration); `{{CRATE_DAG}}`
   — mermaid `graph TD` edges derived from real manifest dependencies, never
   invented; `{{PAGE_INDEX}}` — a `| Page | Covers | Summary |` table, one
   row per approved page, with provisional summaries (finalized in G5).
