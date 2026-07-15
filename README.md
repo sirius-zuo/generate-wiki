@@ -8,8 +8,8 @@
 
 Internal architecture wikis are usually written once and then rot as the
 code moves on. This skill builds one instead, and keeps it honest: one
-markdown page per subsystem, each covering that subsystem's architecture,
-runtime flows, PR-traceable key decisions, and source anchors, wired
+markdown page per subsystem, each covering that subsystem's Architecture,
+Runtime Flows, PR-traceable Key Decisions, and Source Anchors, wired
 together by a hub `README.md` and a mechanical check script. It has two
 modes. In **generate** mode, it produces the wiki from scratch: it mines
 the actual codebase for each subsystem (source directories, `git
@@ -32,13 +32,13 @@ For Claude Code, copy or symlink this folder into
 `~/.claude/skills/generate-wiki` (available in every project) or
 `<project>/.claude/skills/generate-wiki` (project-scoped only). For other
 agents that support the Agent Skills format, follow that agent's skill
-install convention — this folder's `SKILL.md` + `references/` + `assets/`
-layout is the only requirement.
+install convention. The only requirement is this folder's `SKILL.md` +
+`references/` + `assets/` layout.
 
 ## Usage
 
 - `/generate-wiki` — generate mode: interview, scaffold, per-page pipeline,
-  cross-link pass, final review.
+  cross-link pass, final review, handoff.
 - `/generate-wiki refresh --dry-run` — refresh mode, report-only: print the
   drift table, touch nothing.
 - `/generate-wiki refresh --pages a,b` — restrict refresh to the named pages.
