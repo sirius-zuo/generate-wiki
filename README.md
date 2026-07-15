@@ -6,19 +6,25 @@
 ![documentation](https://img.shields.io/badge/documentation-blue)
 ![wiki](https://img.shields.io/badge/wiki-blue)
 
-An agent skill — following the open [Agent Skills](https://agentskills.io)
-format — that builds an internal architecture wiki: one markdown page per
-subsystem (architecture, runtime flows, PR-traceable key decisions, source
-anchors), wired together by a hub `README.md` and a mechanical check
-script. It isn't tied to any single agent: any agent runtime that supports
-the Agent Skills format (subagent dispatch, file read/write, and a
-structured user-question tool) can run it. Claude Code is the primary
-tested environment and is used for the install instructions below. Two
-modes: **generate** builds the wiki from scratch via per-page implementer +
-factual-reviewer subagent pairs; **refresh** re-scans each page's Source
-Anchors for drift and updates only the pages actually touched — drift
-detection is anchor-based (it diffs `git log` against the paths a page
-cites), not timestamp- or version-based.
+Internal architecture wikis are usually written once and then rot as the
+code moves on. This skill builds one instead, and keeps it honest: one
+markdown page per subsystem, each covering that subsystem's architecture,
+runtime flows, PR-traceable key decisions, and source anchors, wired
+together by a hub `README.md` and a mechanical check script. It has two
+modes. In **generate** mode, it produces the wiki from scratch: it mines
+the actual codebase for each subsystem (source directories, `git
+log`/PR history, and any design docs you point it at), then writes each
+page through per-page implementer and factual-reviewer subagent pairs, so
+pages stay grounded in that material instead of getting fabricated. In
+**refresh** mode, it re-scans each page's Source Anchors for drift,
+diffing `git log` against the paths a page cites (not timestamps or
+versions), and updates only the pages that actually fell out of sync.
+
+It follows the open [Agent Skills](https://agentskills.io) format, so it
+isn't tied to any single agent: any runtime with subagent dispatch, file
+read/write, and a structured user-question tool can run it. Claude Code is
+the primary tested environment and is used for the install instructions
+below.
 
 ## Install
 
