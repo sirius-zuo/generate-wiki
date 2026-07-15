@@ -1,19 +1,33 @@
 # generate-wiki
 
-A Claude Code skill that builds an internal architecture wiki: one markdown
-page per subsystem (architecture, runtime flows, PR-traceable key decisions,
-source anchors), wired together by a hub `README.md` and a mechanical check
-script. Two modes: **generate** builds the wiki from scratch via per-page
-implementer + factual-reviewer subagent pairs; **refresh** re-scans each
-page's Source Anchors for drift and updates only the pages actually touched
-— drift detection is anchor-based (it diffs `git log` against the paths a
-page cites), not timestamp- or version-based.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![agent-skill](https://img.shields.io/badge/agent--skill-8A2BE2)
+![architecture](https://img.shields.io/badge/architecture-blue)
+![documentation](https://img.shields.io/badge/documentation-blue)
+![wiki](https://img.shields.io/badge/wiki-blue)
+
+An agent skill — following the open [Agent Skills](https://agentskills.io)
+format — that builds an internal architecture wiki: one markdown page per
+subsystem (architecture, runtime flows, PR-traceable key decisions, source
+anchors), wired together by a hub `README.md` and a mechanical check
+script. It isn't tied to any single agent: any agent runtime that supports
+the Agent Skills format (subagent dispatch, file read/write, and a
+structured user-question tool) can run it. Claude Code is the primary
+tested environment and is used for the install instructions below. Two
+modes: **generate** builds the wiki from scratch via per-page implementer +
+factual-reviewer subagent pairs; **refresh** re-scans each page's Source
+Anchors for drift and updates only the pages actually touched — drift
+detection is anchor-based (it diffs `git log` against the paths a page
+cites), not timestamp- or version-based.
 
 ## Install
 
-Copy or symlink this folder into `~/.claude/skills/generate-wiki` (available
-in every project) or `<project>/.claude/skills/generate-wiki`
-(project-scoped only).
+For Claude Code, copy or symlink this folder into
+`~/.claude/skills/generate-wiki` (available in every project) or
+`<project>/.claude/skills/generate-wiki` (project-scoped only). For other
+agents that support the Agent Skills format, follow that agent's skill
+install convention — this folder's `SKILL.md` + `references/` + `assets/`
+layout is the only requirement.
 
 ## Usage
 
