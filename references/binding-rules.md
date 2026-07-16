@@ -39,7 +39,12 @@ repo, or an untracked file as a Ref.
 - Use the 8 template sections, in this exact order, with none added or dropped:
   Purpose, Position in the System, Architecture, Runtime Flows, Key Decisions,
   Implementation Notes, Source Anchors, Related Pages.
-- Diagrams are Mermaid only — no ASCII art, no embedded images.
+- Diagrams are Mermaid only — no ASCII art, no embedded images. Node IDs
+  must not be Mermaid reserved words (`graph`, `subgraph`, `end`, `style`,
+  `class`, `classDef`, `click`, `default`, `flowchart`, `direction`,
+  `linkStyle`) — when a derived ID collides (e.g. a crate named `x-graph`
+  shortened to `graph`), rename the ID and keep the real name in the
+  bracketed label.
 - Never cite line numbers (e.g. `foo.rs:123`); reference function, type, and
   file names instead. Line numbers drift the moment code changes; names are
   what the check script (the repo's materialized `check-wiki.sh`) and

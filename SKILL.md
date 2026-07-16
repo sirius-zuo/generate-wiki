@@ -69,7 +69,9 @@ Materialize the three assets into the target repo:
   filled: `{{PROJECT_NAME}}`; `{{SYSTEM_DESCRIPTION}}` (two paragraphs
   drafted from repo exploration); `{{CRATE_DAG}}`
   — mermaid `graph TD` edges derived from real manifest dependencies, never
-  invented; `{{PAGE_INDEX}}` — a `| Page | Covers | Summary |` table, one
+  invented; node IDs must avoid Mermaid reserved words per
+  `references/binding-rules.md` (a crate shortened to `graph`, `end`, etc.
+  breaks rendering — rename the ID, keep the crate name in the label); `{{PAGE_INDEX}}` — a `| Page | Covers | Summary |` table, one
   row per approved page, with provisional summaries (finalized in G5).
 - `assets/check-wiki.sh.tmpl` → `scripts/check-wiki.sh` mode 0755 (or
   `<dir>/check-wiki.sh` if the repo has no `scripts/` convention), rendered
