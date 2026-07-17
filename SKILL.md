@@ -1,6 +1,7 @@
 ---
 name: generate-wiki
-description: Use when asked to generate an internal architecture wiki, document subsystem architecture with decision records, or refresh/audit an existing wiki/ for drift. Builds one page per subsystem (architecture, runtime flows, PR-traceable key decisions, source anchors) via per-page implementer + factual-reviewer subagents. Modes: generate (default), refresh [--dry-run] [--pages a,b].
+description: Use when asked to generate an internal architecture wiki, document subsystem architecture with decision records, or refresh/audit an existing wiki/ for drift. Builds one page per subsystem (architecture, runtime flows, PR-traceable key decisions, source anchors) via per-page implementer + factual-reviewer subagents. 
+Modes: generate (default), refresh [--dry-run] [--pages a,b].
 argument-hint: '[refresh] [--dry-run] [--pages page1,page2] [--dir wiki]'
 allowed-tools: Agent, Bash, Read, Write, Edit, Grep, Glob, AskUserQuestion
 ---
