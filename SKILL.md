@@ -31,8 +31,10 @@ generate first — there is nothing to refresh.
 ## Generate G1 — Preflight
 
 Verify: current directory is inside a git repository; the Agent tool is
-available. If the working tree is dirty, use AskUserQuestion to confirm
-before proceeding — never assume. Probe capabilities: `gh auth status`
+available. If the working tree is dirty, ask the user to confirm before
+proceeding, using a structured question tool such as AskUserQuestion in
+Claude Code if the runtime provides one, otherwise plain chat; never
+assume. Probe capabilities: `gh auth status`
 sets whether the PR-body sourcing tier (binding rules §2) exists this run.
 Probe for design-doc directories at the repo root — `docs/`, `doc/`,
 `design/`, `adr/`, `rfcs/` — existence only; which (if any) to mine is
@@ -49,7 +51,9 @@ Before asking anything, auto-derive a page-set proposal: enumerate
 subsystems from workspace/package manifests, or top-level source
 directories if the ecosystem exposes no manifests, and propose one page
 per subsystem with a one-line "covers" note. Then run exactly ONE
-AskUserQuestion round, up to 3 questions:
+question round of up to 3 questions, using a structured question tool
+such as AskUserQuestion in Claude Code if the runtime provides one,
+otherwise plain chat:
 
 1. Approve or adjust the proposed page set (merge, split, add, drop).
 2. Confirm the output directory (`<dir>`) and branch name — if the user
@@ -99,7 +103,9 @@ a. **Explore & compose the brief** at
    (directories/modules covered, design docs to mine, PRs/commits from
    `git log --oneline -- <dirs>` plus `gh pr list` when available),
    minimum flows, minimum decisions. Briefs are floors, not ceilings.
+
 b. Record `BASE=$(git rev-parse HEAD)`.
+
 c. Dispatch an implementer subagent on **a mid-tier model (in Claude Code:
    sonnet)** from `references/page-implementer.md`, filling all seven
    slots: `<<BRIEF_PATH>>` = the brief from (a); `<<WIKI_DIR>>` = `<dir>`;
@@ -109,9 +115,11 @@ c. Dispatch an implementer subagent on **a mid-tier model (in Claude Code:
    `<<BINDING_RULES>>` = the full verbatim contents of
    `references/binding-rules.md`; `<<REPORT_PATH>>` =
    `.generate-wiki/report-<name>.md`.
+
 d. Generate the diff package:
    `git diff $BASE..HEAD > .generate-wiki/review-<name>.diff` — this path
    is `DIFF_PACKAGE_PATH`.
+
 e. Dispatch a reviewer subagent on **a mid-tier model (in Claude Code:
    sonnet)** from `references/page-reviewer.md`, filling all six slots:
    `<<BRIEF_PATH>>` = same brief as (a); `<<REPORT_PATH>>` = the
@@ -119,12 +127,14 @@ e. Dispatch a reviewer subagent on **a mid-tier model (in Claude Code:
    (d); `<<BINDING_RULES>>` = `references/binding-rules.md` verbatim;
    `<<MIN_COVERAGE>>` = the brief's minimum flows and decisions, restated
    inline; `<<CHECK_CMD>>` = same value as (c).
+
 f. Critical/Important findings → dispatch ONE fix subagent on **a mid-tier
    model (in Claude Code: sonnet)** with the complete findings list and the
    binding rules, appending to the same `REPORT_PATH`; regenerate the diff
    package with `git diff $BASE..HEAD > .generate-wiki/review-<name>.diff`;
    then re-dispatch the reviewer with the same slots. Minors → record in the
    ledger for final-review triage; do not fix now.
+
 g. Append one line to `.generate-wiki/progress.md`:
    `Page <name>: complete (commits X..Y, review <outcome>); minors: ...;
    findings: ...`.
@@ -153,14 +163,25 @@ sentence the pass introduced against source.
 Build the whole-branch diff package:
 `git diff <branch-base>..HEAD > .generate-wiki/final-diff.diff`
 (`<branch-base>` = the contents of `.generate-wiki/branch-base`, recorded
-in G1). Write
-`.generate-wiki/triage.md`: every deferred Minor plus every real project
-finding recorded in the ledger. Dispatch ONE subagent on **the most
-capable available model** from `references/final-reviewer.md`, filling all
-five slots: `<<WIKI_DIR>>` = `<dir>`; `<<CHECK_CMD>>` = `$CHECK`;
+in G1). 
+
+Write `.generate-wiki/triage.md`: every deferred Minor plus every real project
+finding recorded in the ledger. 
+
+Dispatch ONE subagent on **the most capable available model** from `references/final-reviewer.md`, filling all
+five slots: 
+
+`<<WIKI_DIR>>` = `<dir>`; 
+
+`<<CHECK_CMD>>` = `$CHECK`;
+
 `<<DIFF_PACKAGE_PATH>>` = `.generate-wiki/final-diff.diff`;
-`<<LEDGER_PATH>>` = `.generate-wiki/progress.md`; `<<TRIAGE_PATH>>` =
-`.generate-wiki/triage.md`. This is a read-only review — it must not touch
+
+`<<LEDGER_PATH>>` = `.generate-wiki/progress.md`; 
+
+`<<TRIAGE_PATH>>` = `.generate-wiki/triage.md`. 
+
+This is a read-only review — it must not touch
 the working tree. For its findings, dispatch ONE fix subagent on **a
 mid-tier model (in Claude Code: sonnet)** covering the complete list (the
 orchestrator may apply single-sentence fixes directly instead). Re-run all
@@ -178,9 +199,10 @@ either without the user's explicit confirmation.
 
 ## Refresh R1 — Drift detection
 
-Preflight: require a clean working tree — if dirty, use AskUserQuestion to
-confirm before any R3 edits; refresh commits land on the current branch,
-not a new one.
+Preflight: require a clean working tree. If dirty, ask the user to
+confirm before any R3 edits, using a structured question tool such as
+AskUserQuestion in Claude Code if the runtime provides one, otherwise
+plain chat. Refresh commits land on the current branch, not a new one.
 
 For each page in `<dir>`, except `README.md` and `TEMPLATE.md` (or only
 the `--pages` subset, if given): parse its Source Anchors section into a
