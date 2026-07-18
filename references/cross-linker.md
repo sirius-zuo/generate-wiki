@@ -8,7 +8,7 @@ Substitute four slots before sending this file as a subagent prompt:
 against the wiki. `<<BINDING_RULES>>` is the full contents of
 `references/binding-rules.md`, pasted verbatim, unsummarized.
 `<<REPORT_PATH>>` is the file this subagent must write its full report
-to. Dispatch on a mid-tier model (in Claude Code: sonnet). Dispatch
+to. Dispatch on a mid-tier model. Dispatch
 once, after every page has been individually implemented and reviewed,
 never mid-run: the link graph and hub index are only meaningful once
 all pages exist.

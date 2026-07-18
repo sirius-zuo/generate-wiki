@@ -14,7 +14,7 @@ string "none: you are writing the first page" if none exists yet.
 against this page. `<<BINDING_RULES>>` is the full contents of
 `references/binding-rules.md`, pasted verbatim, unsummarized.
 `<<REPORT_PATH>>` is the file this subagent must write its full report to.
-Dispatch on a mid-tier model (in Claude Code: sonnet). Dispatch one page
+Dispatch on a mid-tier model. Dispatch one page
 at a time, never in parallel: each page's commit becomes the next
 page's `git log` context, and parallel dispatch risks two pages
 colliding on the same cross-link or terminology choice.

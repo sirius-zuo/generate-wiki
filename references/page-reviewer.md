@@ -18,7 +18,7 @@ with source. `<<MIN_COVERAGE>>` restates the brief's minimum flows and
 minimum decisions for this page, so the reviewer can check coverage
 without re-deriving it from `<<BRIEF_PATH>>`. `<<CHECK_CMD>>` is the
 rendered check-script invocation, the same value you pass the
-implementer. Dispatch on a mid-tier model (in Claude Code: sonnet),
+implementer. Dispatch on a mid-tier model,
 immediately after each implementer completes.
 
 ---

@@ -107,8 +107,8 @@ a. **Explore & compose the brief** at
 
 b. Record `BASE=$(git rev-parse HEAD)`.
 
-c. Dispatch an implementer subagent on **a mid-tier model (in Claude Code:
-   sonnet)** from `references/page-implementer.md`, filling all seven
+c. Dispatch an implementer subagent on **a mid-tier model** from
+   `references/page-implementer.md`, filling all seven
    slots: `<<BRIEF_PATH>>` = the brief from (a); `<<WIKI_DIR>>` = `<dir>`;
    `<<PAGE_FILE>>` = `<name>.md`; `<<STYLE_REF>>` = the previous page's
    filename, or the literal string "none: you are writing the first page"
@@ -121,8 +121,8 @@ d. Generate the diff package:
    `git diff $BASE..HEAD > .generate-wiki/review-<name>.diff`; this path
    is `DIFF_PACKAGE_PATH`.
 
-e. Dispatch a reviewer subagent on **a mid-tier model (in Claude Code:
-   sonnet)** from `references/page-reviewer.md`, filling all six slots:
+e. Dispatch a reviewer subagent on **a mid-tier model** from
+   `references/page-reviewer.md`, filling all six slots:
    `<<BRIEF_PATH>>` = same brief as (a); `<<REPORT_PATH>>` = the
    implementer's report from (c); `<<DIFF_PACKAGE_PATH>>` = the diff from
    (d); `<<BINDING_RULES>>` = `references/binding-rules.md` verbatim;
@@ -130,7 +130,7 @@ e. Dispatch a reviewer subagent on **a mid-tier model (in Claude Code:
    inline; `<<CHECK_CMD>>` = same value as (c).
 
 f. Critical/Important findings → dispatch ONE fix subagent on **a mid-tier
-   model (in Claude Code: sonnet)** with the complete findings list and the
+   model** with the complete findings list and the
    binding rules, appending to the same `REPORT_PATH`; regenerate the diff
    package with `git diff $BASE..HEAD > .generate-wiki/review-<name>.diff`;
    then re-dispatch the reviewer with the same slots. Minors → record in the
@@ -148,7 +148,7 @@ onward.
 
 ## Generate G5: Cross-link pass
 
-Dispatch ONE subagent on **a mid-tier model (in Claude Code: sonnet)** from
+Dispatch ONE subagent on **a mid-tier model** from
 `references/cross-linker.md`, once, after every page is implemented and
 reviewed, filling all four slots: `<<WIKI_DIR>>` = `<dir>`; `<<CHECK_CMD>>`
 = `$CHECK` (no page arguments, checks every page); `<<BINDING_RULES>>` =
@@ -184,7 +184,7 @@ five slots:
 
 This is a read-only review; it must not touch
 the working tree. For its findings, dispatch ONE fix subagent on **a
-mid-tier model (in Claude Code: sonnet)** covering the complete list (the
+mid-tier model** covering the complete list (the
 orchestrator may apply single-sentence fixes directly instead). After
 fixes land, re-run all gates: `$CHECK` green over all pages, a symmetric
 link-graph scan, and zero stray design-doc paths.
@@ -240,7 +240,7 @@ changed. One commit per refreshed page.
 ## Model selection
 
 Page implementers, page reviewers, fix subagents, and the cross-linker
-dispatch on **a mid-tier model (in Claude Code: sonnet)**. The final
+dispatch on **a mid-tier model**. The final
 whole-wiki review (G6) dispatches on **the most capable available model**.
 The orchestrator never inherits its own session's model into a dispatch
 implicitly; every Agent call above names its model explicitly.
