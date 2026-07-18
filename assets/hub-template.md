@@ -1,4 +1,4 @@
-# {{PROJECT_NAME}} — Internal Architecture Wiki
+# {{PROJECT_NAME}}: Internal Architecture Wiki
 
 {{SYSTEM_DESCRIPTION}}
 
@@ -21,7 +21,7 @@
 Every page ends with a **Source Anchors** section listing the paths it
 documents. **Rule:** a PR that changes files under a page's anchors either
 updates the page or says why not in the PR body. Drift is detectable
-mechanically — `git log <last-commit-touching-page>.. -- <anchors>` lists
+mechanically: `git log <last-commit-touching-page>.. -- <anchors>` lists
 pages whose sources moved without them; the `generate-wiki` skill's
 `refresh` mode automates this. There is deliberately no CI freshness gate:
 gates train contributors to make no-op doc edits. Run the materialized

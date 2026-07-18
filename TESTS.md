@@ -1,6 +1,6 @@
-# generate-wiki — Test Scenarios & Evidence
+# generate-wiki: Test Scenarios & Evidence
 
-Manual verification scenarios. No automation — invoke the skill against the described input and compare against expected output.
+Manual verification scenarios. There is no automation; invoke the skill against the described input and compare against expected output.
 
 ## TS-1: Generate, full pipeline
 
@@ -63,7 +63,7 @@ Anchors.
 
 **Expected output:** The run's drift table names exactly the one page whose
 anchors the seeded commit touched. That page receives exactly one new
-commit reflecting the change — either a new Key Decision entry, added
+commit reflecting the change: either a new Key Decision entry, added
 above the existing ones (the prior entries are still present, byte-for-byte,
 below it; decision history appended, never rewritten), or amended prose in
 an affected section, whichever the change warrants. Its Source Anchors are
@@ -84,7 +84,7 @@ from TS-3 applied, before running any refresh.
 
 **Expected output:** The printed drift table is identical to the one
 produced in TS-3 (same page, same drifting commit subject). `git status`
-is clean afterward — no files staged, modified, or committed, and no branch
+is clean afterward: no files staged, modified, or committed, and no branch
 created.
 
 **Fail signals:**

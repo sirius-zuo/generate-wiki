@@ -37,27 +37,27 @@ install convention. The only requirement is this folder's `SKILL.md` +
 
 ## Usage
 
-- `/generate-wiki` — generate mode: interview, scaffold, per-page pipeline,
-  cross-link pass, final review, handoff.
-- `/generate-wiki refresh --dry-run` — refresh mode, report-only: print the
-  drift table, touch nothing.
-- `/generate-wiki refresh --pages a,b` — restrict refresh to the named pages.
-- `/generate-wiki --dir <path>` — set the wiki output directory (default
+- `/generate-wiki` runs generate mode: interview, scaffold, per-page
+  pipeline, cross-link pass, final review, handoff.
+- `/generate-wiki refresh --dry-run` runs refresh in report-only mode:
+  print the drift table, touch nothing.
+- `/generate-wiki refresh --pages a,b` restricts refresh to the named pages.
+- `/generate-wiki --dir <path>` sets the wiki output directory (default
   `wiki`).
 
 ## How it works
 
 Three layers:
 
-1. **`SKILL.md`** — orchestration: mode detection, the G1–G7 generate
+1. **`SKILL.md`** is the orchestration layer: mode detection, the G1–G7 generate
    pipeline (preflight, interview, scaffold, per-page loop, cross-link,
    final review, handoff) and the R1–R3 refresh pipeline (drift detection,
    report, update loop).
-2. **`references/`** — dispatch templates handed verbatim to each subagent:
+2. **`references/`** holds the dispatch templates handed verbatim to each subagent:
    `binding-rules.md` (anti-fabrication + sourcing priority), plus
    `page-implementer.md`, `page-reviewer.md`, `cross-linker.md`, and
    `final-reviewer.md`.
-3. **`assets/`** — files materialized into the target repo:
+3. **`assets/`** holds the files materialized into the target repo:
    `TEMPLATE.md` (per-page skeleton), `hub-template.md` (README hub),
    `check-wiki.sh.tmpl` (mechanical link/section check).
 
@@ -68,4 +68,4 @@ architecture wiki (PR #31, merged 2026-07-07).
 
 ## License
 
-MIT — see `LICENSE`.
+MIT. See `LICENSE`.
