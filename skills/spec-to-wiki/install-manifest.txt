@@ -1,0 +1,8 @@
+shared/assets/TEMPLATE.md
+shared/assets/hub-template.md
+shared/assets/check-wiki.sh.tmpl
+shared/references/binding-rules.md
+shared/references/cross-linker.md
+shared/references/final-reviewer.md
+shared/references/page-implementer.md
+shared/references/page-reviewer.md
