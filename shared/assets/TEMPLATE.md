@@ -1,6 +1,6 @@
 # <Subsystem Name>
 
-<!-- Copy this template for new pages. Every section below is required, in this order. -->
+<!-- Copy this template for new pages. All nine sections below are required, in this order. -->
 
 ## Purpose
 
@@ -41,10 +41,31 @@ Newest first. Each entry:
 
 Invariants, gotchas, known debt / open follow-ups (labeled as such).
 
+## Spec Deviations
+
+<!-- Before implementation, write exactly:
+     Implementation has not been assessed.
+
+     With implementation, list newest material deviation first:
+
+### <Deviation title>
+- **Expected:** claim and specification source.
+- **Implemented:** observed behavior and implementation source.
+- **Reason:** sourced rationale, or exactly:
+  No rationale found in available project history.
+- **Impact:** practical consequence.
+- **Status:** active | resolved | superseded.
+-->
+
 ## Source Anchors
 
-- `example/src/lib.rs`
-- `example/` (module)
+### Specification Sources
+
+- `specs/example.md` (section: Example)
+
+### Implementation Sources
+
+- `example/src/lib.rs` (module)
 
 <!-- The drift contract: a PR changing files under these anchors updates this page
      or says why not in the PR body. -->

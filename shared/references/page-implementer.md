@@ -28,7 +28,7 @@ end users. Read `<<BRIEF_PATH>>` first; it is your requirements.
 Before drafting, study two references:
 
 - `<<WIKI_DIR>>/TEMPLATE.md` is the page structure you must follow
-  exactly: 8 sections, in this order, none added and none dropped.
+  exactly: 9 sections, in this order, none added and none dropped.
 - `<<STYLE_REF>>` is an already-committed page to match for tone,
   density, and level of detail (or, if this is the first page, there is
   nothing to match yet).
@@ -45,10 +45,12 @@ Follow this six-step procedure:
   code, design docs, PRs via `gh pr view N --json title,body` when
   available, `git log --oneline -- <dirs>`). Confirm every type/function/
   file you plan to name exists in current source before writing it.
-- **Step B (Draft):** copy the template structure; fill all eight sections.
+- **Step B (Draft):** copy the template structure; fill all nine sections.
   The brief's flows/decisions are a floor, not a ceiling; dig for more
   real decisions in the sources. Position-in-System links use canonical
-  filenames only.
+  filenames only. Keep Specification Sources and Implementation Sources
+  separate. A code-only page records specification provenance as unavailable
+  and does not manufacture a deviation.
 - **Step C (Verify refs):** every Key Decision Ref resolves (`gh pr view N`
   or `git show SHA`); every named symbol exists in source.
 - **Step D (Check):** run `<<CHECK_CMD>>`; it must pass for your page.

@@ -35,11 +35,22 @@ Every reference cited as a source must be durable: a PR number, a commit SHA, or
 a path to a tracked file. Never cite a branch name, a local path outside the
 repo, or an untracked file as a Ref.
 
+For every Spec Deviations entry, verify **Expected** against a specification
+source and **Implemented** against current code. **Reason** requires direct
+evidence from a tracked design record, PR body, or commit. If none exists,
+write exactly: `No rationale found in available project history.` Never infer
+a reason from the shape of the code. Status must be one of `active`,
+`resolved`, or `superseded`. Preserve the original Expected and Implemented
+account when changing status or appending resolution evidence.
+
 ## 3. Page conventions
 
-- Use the 8 template sections, in this exact order, with none added or dropped:
+- Use the 9 template sections, in this exact order, with none added or dropped:
   Purpose, Position in the System, Architecture, Runtime Flows, Key Decisions,
-  Implementation Notes, Source Anchors, Related Pages.
+  Implementation Notes, Spec Deviations, Source Anchors, Related Pages.
+- Source Anchors has separate Specification Sources and Implementation Sources
+  subsections. Preserve specification provenance when implementation sources
+  become available.
 - Diagrams are Mermaid only: no ASCII art, no embedded images. Node IDs
   must not be Mermaid reserved words (`graph`, `subgraph`, `end`, `style`,
   `class`, `classDef`, `click`, `default`, `flowchart`, `direction`,
