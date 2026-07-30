@@ -30,4 +30,16 @@ if "$ROOT/scripts/install.sh" --skill spec-to-wiki --dest "$TMP/skills"; then
 fi
 "$ROOT/scripts/install.sh" --skill spec-to-wiki --dest "$TMP/skills" --force
 ! grep -Fq 'local edit' "$TMP/skills/spec-to-wiki/SKILL.md"
+
+cp -R "$ROOT" "$TMP/source"
+"$TMP/source/scripts/install.sh" --skill spec-to-wiki --dest "$TMP/upgrade"
+printf '\nSource upgrade marker.\n' >> "$TMP/source/skills/spec-to-wiki/SKILL.md"
+"$TMP/source/scripts/install.sh" --skill spec-to-wiki --dest "$TMP/upgrade"
+grep -Fq 'Source upgrade marker.' "$TMP/upgrade/spec-to-wiki/SKILL.md"
+
+printf '\nlocal edit after upgrade\n' >> "$TMP/upgrade/spec-to-wiki/SKILL.md"
+if "$TMP/source/scripts/install.sh" --skill spec-to-wiki --dest "$TMP/upgrade"; then
+  echo "installer overwrote a local edit after source upgrade" >&2
+  exit 1
+fi
 echo "test-installer: PASS"

@@ -31,6 +31,12 @@ revision=$(git -C "$ROOT" rev-parse HEAD 2>/dev/null || printf 'unknown')
 sources=()
 outputs=()
 labels=()
+owners=()
+relatives=()
+
+checksum() {
+  cksum "$1" | awk '{ print $1 ":" $2 }'
+}
 
 for selected in $selected_skills; do
   source_dir="$ROOT/skills/$selected"
@@ -45,6 +51,8 @@ for selected in $selected_skills; do
     sources+=("$source_file")
     outputs+=("$dest/$selected/$relative")
     labels+=("$selected/$relative")
+    owners+=("$selected")
+    relatives+=("$relative")
   done < <(find "$source_dir" -type f ! -name install-manifest.txt | sort)
 
   while IFS= read -r shared_path; do
@@ -57,6 +65,8 @@ for selected in $selected_skills; do
     sources+=("$ROOT/$shared_path")
     outputs+=("$dest/$selected/shared/$relative")
     labels+=("$selected/shared/$relative")
+    owners+=("$selected")
+    relatives+=("shared/$relative")
   done < "$source_dir/install-manifest.txt"
 
   metadata="$metadata_dir/$selected"
@@ -64,18 +74,42 @@ for selected in $selected_skills; do
     echo "generated-install: true"
     echo "canonical-source: shared/"
     echo "repository-revision: $revision"
+    for index in "${!sources[@]}"; do
+      if [ "${owners[$index]:-}" = "$selected" ]; then
+        value=$(checksum "${sources[$index]}")
+        checksum_value=${value%%:*}
+        size_value=${value#*:}
+        echo "file-checksum: $checksum_value $size_value ${relatives[$index]}"
+      fi
+    done
   } > "$metadata"
   sources+=("$metadata")
   outputs+=("$dest/$selected/.wiki-skill-install")
   labels+=("$selected/.wiki-skill-install")
+  owners+=("$selected")
+  relatives+=(".wiki-skill-install")
 done
 
 for index in "${!sources[@]}"; do
   source_file=${sources[$index]}
   output_file=${outputs[$index]}
+  relative=${relatives[$index]}
+  if [ "$relative" = ".wiki-skill-install" ]; then
+    continue
+  fi
   if [ -e "$output_file" ] && ! cmp -s "$source_file" "$output_file" && [ "$force" -ne 1 ]; then
-    echo "REFUSE modified file: $output_file" >&2
-    exit 1
+    prior_metadata="$dest/${owners[$index]}/.wiki-skill-install"
+    expected=
+    if [ -f "$prior_metadata" ]; then
+      expected=$(awk -v wanted="$relative" \
+        '$1 == "file-checksum:" && $4 == wanted { print $2 ":" $3 }' \
+        "$prior_metadata")
+    fi
+    actual=$(checksum "$output_file")
+    if [ -z "$expected" ] || [ "$actual" != "$expected" ]; then
+      echo "REFUSE modified file: $output_file" >&2
+      exit 1
+    fi
   fi
 done
 
