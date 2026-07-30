@@ -62,6 +62,10 @@ Apply this review method; every check below is required:
 8. **Findings spot-check:** pick 2–3 real-project findings from
    `<<TRIAGE_PATH>>` and verify each against actual source; confirm
    the finding is real, not a misreading.
+9. **Provenance and deviations:** verify sampled pages keep Specification
+   Sources separate from Implementation Sources. For pages with Spec
+   Deviations, verify the five-field shape and spot-check that missing
+   rationale uses the mandated fallback rather than an inferred reason.
 
 Return, in this order:
 

@@ -50,13 +50,16 @@ Apply this review method:
    rationale. Misattribution is Critical even when the underlying fact is
    true. If git history proves the brief itself wrong, say so explicitly;
    a proven deviation is the implementer being right.
-3. **Mechanical:** run `<<CHECK_CMD>>`; verify the eight sections are in
-   order (the script checks presence only); scan for line numbers, stray
-   design-doc paths, non-canonical links.
+3. **Mechanical:** run `<<CHECK_CMD>>`; verify the nine sections are in
+   order; scan for line numbers, stray design-doc paths, non-canonical links,
+   and mixed specification/implementation anchors.
 4. **Spec compliance vs the brief:** minimum flows and decisions covered?
    Anything out of scope?
 5. **Quality:** prose clarity for the stated audience; diagram types exist
    in source; no aspirational content outside Implementation Notes.
+6. **Deviation honesty:** when deviations exist, verify Expected against
+   specification evidence, Implemented against code, the five required fields,
+   and direct rationale evidence. Code-only pages need no deviation entries.
 
 Return: a spec-compliance verdict (✅/❌, with specifics), a quality
 verdict (Approved / Needs fixes), findings classified Critical/

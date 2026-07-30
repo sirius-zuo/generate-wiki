@@ -1,7 +1,7 @@
 ---
-name: generate-wiki
-description: Use when asked to generate an internal architecture wiki, document subsystem architecture with decision records, or refresh/audit an existing wiki/ for drift. Builds one page per subsystem (architecture, runtime flows, PR-traceable key decisions, source anchors) via per-page implementer + factual-reviewer subagents. 
-Modes: generate (default), refresh [--dry-run] [--pages a,b].
+name: code-to-wiki
+description: Use when substantive implementation exists to create a code-grounded architecture wiki or refresh and reconcile an existing wiki with the codebase.
+Modes: create (default), refresh [--dry-run] [--pages a,b].
 argument-hint: '[refresh] [--dry-run] [--pages page1,page2] [--dir wiki]'
 allowed-tools: Agent, Bash, Read, Write, Edit, Grep, Glob, AskUserQuestion
 ---
@@ -13,8 +13,8 @@ Builds an internal architecture wiki: one markdown page per subsystem
 wired together by a hub `README.md` and a mechanical check script. Two
 modes: **generate** builds a wiki from scratch; **refresh** detects drift
 via each page's Source Anchors and updates only what changed. Below,
-`<skill>/` means this skill's own directory (where this file, `references/`,
-and `assets/` live), as distinct from `<dir>`, the target repo's wiki output
+`<skill>/` means this installed skill's directory (where this file and
+`shared/` live), as distinct from `<dir>`, the target repo's wiki output
 directory. Before doing anything else, make a todo list: one item per
 numbered step of the active mode (G1–G7, or R1–R3), once Step 0 has
 determined which mode is active.
@@ -27,6 +27,13 @@ record: `--dry-run` (refresh only), `--pages a,b` (restricts refresh to the
 named pages), `--dir <path>` (wiki directory, default `wiki`). In refresh
 mode, if `<dir>/README.md` does not exist, stop and tell the user to run
 generate first; there is nothing to refresh.
+
+For default invocation, `<dir>/README.md` absent selects Create mode
+(G1-G7). When it exists, inspect each page's Source Anchors. A page with
+Specification Sources enters reconciliation whenever Implementation Sources
+are absent or implementation anchors drift. A page whose specification
+provenance is explicitly unavailable uses the ordinary code-only path.
+Never infer a deviation without specification provenance.
 
 ## Generate G1: Preflight
 
@@ -69,21 +76,21 @@ in generate mode.
 
 Materialize the three assets into the target repo:
 
-- `assets/TEMPLATE.md` → `<dir>/TEMPLATE.md`, copied as-is.
-- `assets/hub-template.md` → `<dir>/README.md`, all four `{{...}}` tokens
+- `shared/assets/TEMPLATE.md` → `<dir>/TEMPLATE.md`, copied as-is.
+- `shared/assets/hub-template.md` → `<dir>/README.md`, all four `{{...}}` tokens
   filled: `{{PROJECT_NAME}}`; `{{SYSTEM_DESCRIPTION}}` (two paragraphs
   drafted from repo exploration); `{{CRATE_DAG}}` (mermaid `graph TD`
   edges derived from real manifest dependencies, never invented; node IDs
-  must avoid Mermaid reserved words per `references/binding-rules.md`,
+  must avoid Mermaid reserved words per `shared/references/binding-rules.md`,
   since a crate shortened to `graph`, `end`, etc. breaks rendering:
   rename the ID, keep the crate name in the label); `{{PAGE_INDEX}}` (a
   `| Page | Covers | Summary |` table, one row per approved page, with
   provisional summaries finalized in G5).
-- `assets/check-wiki.sh.tmpl` → `scripts/check-wiki.sh` mode 0755 (or
+- `shared/assets/check-wiki.sh.tmpl` → `scripts/check-wiki.sh` mode 0755 (or
   `<dir>/check-wiki.sh` if the repo has no `scripts/` convention), rendered
   with the exact command:
   ```bash
-  sed -e "s|{{CANONICAL_PAGES}}|$PAGES|g" -e "s|{{WIKI_DIR}}|$DIR|g" <skill>/assets/check-wiki.sh.tmpl > scripts/check-wiki.sh
+  sed -e "s|{{CANONICAL_PAGES}}|$PAGES|g" -e "s|{{WIKI_DIR}}|$DIR|g" <skill>/shared/assets/check-wiki.sh.tmpl > scripts/check-wiki.sh
   ```
   where `$PAGES` is the space-separated approved page filenames and `$DIR`
   is `<dir>`. Call this rendered script's path `$CHECK` for the rest of
@@ -108,13 +115,13 @@ a. **Explore & compose the brief** at
 b. Record `BASE=$(git rev-parse HEAD)`.
 
 c. Dispatch an implementer subagent on **a mid-tier model** from
-   `references/page-implementer.md`, filling all seven
+   `shared/references/page-implementer.md`, filling all seven
    slots: `<<BRIEF_PATH>>` = the brief from (a); `<<WIKI_DIR>>` = `<dir>`;
    `<<PAGE_FILE>>` = `<name>.md`; `<<STYLE_REF>>` = the previous page's
    filename, or the literal string "none: you are writing the first page"
    for the first page; `<<CHECK_CMD>>` = `$CHECK <name>.md`;
    `<<BINDING_RULES>>` = the full verbatim contents of
-   `references/binding-rules.md`; `<<REPORT_PATH>>` =
+   `shared/references/binding-rules.md`; `<<REPORT_PATH>>` =
    `.generate-wiki/report-<name>.md`.
 
 d. Generate the diff package:
@@ -122,10 +129,10 @@ d. Generate the diff package:
    is `DIFF_PACKAGE_PATH`.
 
 e. Dispatch a reviewer subagent on **a mid-tier model** from
-   `references/page-reviewer.md`, filling all six slots:
+   `shared/references/page-reviewer.md`, filling all six slots:
    `<<BRIEF_PATH>>` = same brief as (a); `<<REPORT_PATH>>` = the
    implementer's report from (c); `<<DIFF_PACKAGE_PATH>>` = the diff from
-   (d); `<<BINDING_RULES>>` = `references/binding-rules.md` verbatim;
+   (d); `<<BINDING_RULES>>` = `shared/references/binding-rules.md` verbatim;
    `<<MIN_COVERAGE>>` = the brief's minimum flows and decisions, restated
    inline; `<<CHECK_CMD>>` = same value as (c).
 
@@ -140,6 +147,25 @@ g. Append one line to `.generate-wiki/progress.md`:
    `Page <name>: complete (commits X..Y, review <outcome>); minors: ...;
    findings: ...`.
 
+### Reconciliation extension
+
+For a page with Specification Sources, its brief also extracts material,
+testable claims from those sources and maps them to current implementation
+evidence. Compare architecture, behavior, constraints, interfaces, and
+explicit decisions. Ignore prose-only differences.
+
+For each material mismatch, dispatch
+`references/deviation-reviewer.md` as a read-only gate before any fixer
+writes the entry. Each accepted entry has Expected, Implemented, Reason,
+Impact, and Status fields. Reason must cite a tracked design record, PR, or
+commit. If none explains the difference, write exactly:
+`No rationale found in available project history.`
+
+Existing deviation records are history. Preserve their original Expected
+and Implemented text. A later run may append resolution evidence and change
+Status to `resolved` or `superseded`; it must not erase the account. A page
+with unavailable specification provenance has no manufactured deviations.
+
 **Crash recovery:** on invocation, read `.generate-wiki/progress.md` first.
 Pages it marks complete are skipped; never regenerate a ledger-complete
 page. A page with an uncommitted draft (`git status` shows the page file)
@@ -149,10 +175,10 @@ onward.
 ## Generate G5: Cross-link pass
 
 Dispatch ONE subagent on **a mid-tier model** from
-`references/cross-linker.md`, once, after every page is implemented and
+`shared/references/cross-linker.md`, once, after every page is implemented and
 reviewed, filling all four slots: `<<WIKI_DIR>>` = `<dir>`; `<<CHECK_CMD>>`
 = `$CHECK` (no page arguments, checks every page); `<<BINDING_RULES>>` =
-`references/binding-rules.md` verbatim; `<<REPORT_PATH>>` =
+`shared/references/binding-rules.md` verbatim; `<<REPORT_PATH>>` =
 `.generate-wiki/cross-link-report.md`. Then the orchestrator verifies
 directly, with no reviewer dispatch for this pass: `$CHECK` green over all
 pages; a fresh symmetric link-graph scan (re-run, not reused from the
@@ -164,23 +190,23 @@ sentence the pass introduced against source.
 Build the whole-branch diff package:
 `git diff <branch-base>..HEAD > .generate-wiki/final-diff.diff`
 (`<branch-base>` = the contents of `.generate-wiki/branch-base`, recorded
-in G1). 
+in G1).
 
 Write `.generate-wiki/triage.md`: every deferred Minor plus every real project
-finding recorded in the ledger. 
+finding recorded in the ledger.
 
-Dispatch ONE subagent on **the most capable available model** from `references/final-reviewer.md`, filling all
-five slots: 
+Dispatch ONE subagent on **the most capable available model** from `shared/references/final-reviewer.md`, filling all
+five slots:
 
-`<<WIKI_DIR>>` = `<dir>`; 
+`<<WIKI_DIR>>` = `<dir>`;
 
 `<<CHECK_CMD>>` = `$CHECK`;
 
 `<<DIFF_PACKAGE_PATH>>` = `.generate-wiki/final-diff.diff`;
 
-`<<LEDGER_PATH>>` = `.generate-wiki/progress.md`; 
+`<<LEDGER_PATH>>` = `.generate-wiki/progress.md`;
 
-`<<TRIAGE_PATH>>` = `.generate-wiki/triage.md`. 
+`<<TRIAGE_PATH>>` = `.generate-wiki/triage.md`.
 
 This is a read-only review; it must not touch
 the working tree. For its findings, dispatch ONE fix subagent on **a
@@ -206,8 +232,10 @@ AskUserQuestion in Claude Code if the runtime provides one, otherwise
 plain chat. Refresh commits land on the current branch, not a new one.
 
 For each page in `<dir>`, except `README.md` and `TEMPLATE.md` (or only
-the `--pages` subset, if given): parse its Source Anchors section into a
-bullet path list. `LAST=$(git log -1 --format=%H -- <dir>/<page>)`.
+the `--pages` subset, if given): parse its Implementation Sources subsection
+into a bullet path list. Preserve Specification Sources as reconciliation
+context, not as code-drift inputs.
+`LAST=$(git log -1 --format=%H -- <dir>/<page>)`.
 `git log --oneline $LAST.. -- <anchor paths>` non-empty → **drifted**. An
 anchor path that no longer exists on disk → **hard drift**, flagged
 separately. An anchor bullet that cannot be parsed as a path →
@@ -232,10 +260,12 @@ view` bodies when available) instead of a from-scratch source table; and the
 implementer follows refresh-specific rules layered onto the binding rules:
 update only what actually changed; new Key Decision entries are added
 newest-first; NEVER rewrite or delete an existing decision entry, which is
-history; update Source Anchors for paths that moved; document removed
-functionality honestly rather than deleting its record. Run the cross-link
-check (G5, mechanical verification only) only for pages whose link set
-changed. One commit per refreshed page.
+history; update Implementation Sources for paths that moved; preserve
+Specification Sources; document removed functionality honestly rather than
+deleting its record. For pages with Specification Sources, run the
+reconciliation extension against the affected claims. Run the cross-link check
+(G5, mechanical verification only) only for pages whose link set changed.
+One commit per refreshed page.
 
 ## Model selection
 
